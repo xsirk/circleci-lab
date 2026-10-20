@@ -1,14 +1,27 @@
 version: 2.1
 
+commands:
+  install-deps:
+    steps:
+      - restore_cache:
+          keys:
+            - pip-v1-{{ checksum "requirements.txt" }}
+            - pip-v1-
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - save_cache:
+          key: pip-v1-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/.cache/pip
+
 jobs:
   test:
     docker:
       - image: cimg/python:3.11
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: pip install -r requirements.txt
+      - install-deps
       - run:
           name: Run tests
           command: pytest
@@ -18,9 +31,7 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: pip install -r requirements.txt
+      - install-deps
       - run:
           name: Check formatting (black)
           command: black --check .
