@@ -24,7 +24,13 @@ jobs:
       - install-deps
       - run:
           name: Run tests
-          command: pytest
+          command: |
+            mkdir -p test-results
+            pytest -v --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
 
   lint:
     docker:
