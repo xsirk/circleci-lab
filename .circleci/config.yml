@@ -13,7 +13,20 @@ jobs:
           name: Run tests
           command: pytest
 
+  lint:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Check formatting (black)
+          command: black --check .
+
 workflows:
   build-and-test:
     jobs:
       - test
+      - lint
